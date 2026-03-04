@@ -36,8 +36,7 @@ const menuItems = [
   { path: '/stock-out', icon: 'records', text: '出库管理', color: '#5C93F7' },
   { path: '/inventory-check', icon: 'balance-list-o', text: '盘点管理', color: '#26A69A' },
   { path: '/empty-barrel', icon: 'records', text: '空桶库存', color: '#3F51B5' },
-  { path: '/financial', icon: 'gold-coin-o', text: '财务收支', color: '#26C6DA' },
-  { path: '/tianwang-goods', icon: 'shop-collect-o', text: '天网商品库存', color: '#EF5350' }
+  { path: '/financial', icon: 'gold-coin-o', text: '财务收支', color: '#26C6DA' }
 ]
 </script>
 

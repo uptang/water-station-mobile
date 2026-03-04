@@ -14,14 +14,6 @@
       <van-form @submit="handleSubmit">
         <div class="card">
           <van-cell-group :border="false">
-            <van-field label="发放类别">
-              <template #input>
-                <van-radio-group v-model="formData.ticketType" direction="horizontal">
-                  <van-radio name="store">本店水票</van-radio>
-                  <van-radio name="platform">天网水票</van-radio>
-                </van-radio-group>
-              </template>
-            </van-field>
             <van-field
               label="发放渠道"
               readonly
@@ -164,7 +156,6 @@ import { showToast } from 'vant'
 const router = useRouter()
 
 const formData = reactive({
-  ticketType: 'store',
   channel: '',
   product: '',
   limitType: 'unlimited',

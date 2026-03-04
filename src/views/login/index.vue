@@ -62,13 +62,6 @@
           <span class="link" @click="goToForget">忘记密码？</span>
           <span class="link" @click="goToRegister">门店注册</span>
         </div>
-
-        <!-- 微信登录 -->
-        <div class="wechat-login">
-          <div class="wechat-icon">
-            <van-icon name="wechat" size="40" color="#fff" />
-          </div>
-        </div>
       </div>
 
       <!-- 协议 -->
@@ -278,24 +271,6 @@ const goToRegister = () => {
         &:last-child {
           color: #4E8EF7;
         }
-      }
-    }
-
-    .wechat-login {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-
-      .wechat-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #09BB07 0%, #00D100 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 12px rgba(9, 187, 7, 0.3);
-        cursor: pointer;
       }
     }
   }

@@ -71,9 +71,6 @@
         <van-button plain type="primary" size="small" @click="handleAddUser">
           新建用户
         </van-button>
-        <van-button plain type="primary" size="small" @click="goToPromotion">
-          推广统计
-        </van-button>
       </div>
     </div>
 
@@ -498,10 +495,6 @@ const handleSaveAndOrder = () => {
 
 const submitAddUser = () => {
   handleSave()
-}
-
-const goToPromotion = () => {
-  router.push('/user-promotion')
 }
 
 const goDetail = (id) => {

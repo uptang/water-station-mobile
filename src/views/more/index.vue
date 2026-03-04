@@ -19,15 +19,6 @@
       </div>
     </div>
 
-    <!-- 天网接单横幅 -->
-    <div class="tianwang-banner">
-      <div class="banner-icon">
-        <van-icon name="bar-chart-o" size="32" />
-      </div>
-      <span class="banner-text">天网接单</span>
-      <van-button size="small" class="apply-btn">立即申请</van-button>
-    </div>
-
     <!-- 快捷功能（4个彩色圆形图标）-->
     <div class="quick-functions">
       <div class="function-item" @click="router.push('/user-management')">
@@ -69,31 +60,6 @@
       </div>
     </div>
 
-    <!-- 设置菜单列表 -->
-    <div class="settings-list">
-      <van-cell-group :border="false">
-        <van-cell title="绑定微信" is-link @click="showToast('绑定微信')" />
-        <van-cell
-          title="字体大小设置"
-          is-link
-          @click="showToast('字体大小设置')"
-        />
-        <van-cell title="关于我们" is-link @click="showToast('关于我们')" />
-        <van-cell title="教学视频" is-link @click="showToast('教学视频')" />
-        <van-cell title="操作手册" is-link @click="showToast('操作手册')" />
-        <van-cell title="隐私政策" is-link @click="showToast('隐私政策')" />
-        <van-cell title="推荐有礼" is-link @click="showToast('推荐有礼')" />
-        <van-cell
-          title="在线软件服务说明"
-          is-link
-          @click="showToast('在线软件服务说明')"
-        />
-        <van-cell title="实名认证" is-link @click="showToast('实名认证')" />
-        <van-cell title="上传日志" is-link @click="showToast('上传日志')" />
-        <van-cell title="投诉电话" value="17380124285" />
-      </van-cell-group>
-    </div>
-
     <!-- 退出登录 -->
     <div class="logout-section">
       <div class="logout-btn" @click="handleLogout">退出登录</div>
@@ -121,38 +87,36 @@ const messageCount = ref(0);
 // 功能网格项目（5列布局）
 const functionItems = [
   { icon: "records", text: "接单库存", path: "/order-stats" },
-  { icon: "gold-coin-o", text: "现金账户", path: null },
-  { icon: "gold-coin-o", text: "现金账户", path: null },
-  { icon: "manager-o", text: "我的工人", path: null },
+  // { icon: "gold-coin-o", text: "现金账户", path: null },
+  // { icon: "balance-list-o", text: "账户流水", path: null },
+  { icon: "manager-o", text: "我的工人", path: "/worker-management" },
   { icon: "coupon-o", text: "电子水票", path: null },
 
   { icon: "qr", text: "二维码", path: null },
   { icon: "setting-o", text: "门店设置", path: null },
   { icon: "bar-chart-o", text: "订单统计", path: "/order-stats" },
-  { icon: "balance-o", text: "空桶统计", path: null },
-  { icon: "pending-payment", text: "待核销", path: null },
+  { icon: "balance-o", text: "空桶统计", path: "/barrel-stats" },
+  { icon: "pending-payment", text: "待核销", path: "/verification-stats" },
   { icon: "chart-trending-o", text: "配送统计", path: "/delivery-stats" },
-  { icon: "credit-pay", text: "实体卡", path: null },
-  { icon: "gold-coin-o", text: "软件续费", path: null },
-  { icon: "shop-o", text: "订货商城", path: null },
+  // { icon: "credit-pay", text: "实体卡", path: null },
+  // { icon: "gold-coin-o", text: "软件续费", path: null },
+  // { icon: "shop-o", text: "订货商城", path: null },
   { icon: "balance-list-o", text: "盘点统计", path: null },
 
-  { icon: "chart-trending-o", text: "推广统计", path: null },
   { icon: "qr", text: "订水二维码", path: null },
   { icon: "records", text: "商品盘点", path: null },
   { icon: "records", text: "空桶盘点", path: null },
 
-  { icon: "edit", text: "录入订单", path: null },
-  { icon: "logistics", text: "我的配送", path: null },
-  { icon: "location-o", text: "线路规划", path: null },
+  { icon: "edit", text: "录入订单", path: "/order-manual" },
+  { icon: "logistics", text: "我的配送", path: "/my-delivery" },
+  { icon: "location-o", text: "线路规划", path: "/route-planning" },
   { icon: "coupon-o", text: "优惠券管理", path: null },
   { icon: "clock-o", text: "周期订水", path: null },
 
-  { icon: "balance-list-o", text: "财务中心", path: "/financial" },
-  { icon: "shopping-cart-o", text: "订货商城(新)", path: null },
-  { icon: "service-o", text: "代运营服务", path: null },
-  { icon: "user-circle-o", text: "会员管理", path: null },
-  { icon: "shop-collect-o", text: "天网中心", path: null },
+  // { icon: "balance-list-o", text: "财务中心", path: "/financial" },
+  // { icon: "service-o", text: "代运营服务", path: null },
+  // { icon: "user-circle-o", text: "会员管理", path: null },
+  { icon: "setting-o", text: "平台配置", path: "/platform-config" },
 ];
 
 const handleItemClick = (item) => {
@@ -243,37 +207,6 @@ const handleLogout = () => {
 
   .message-icon {
     cursor: pointer;
-  }
-}
-
-// 天网接单横幅
-.tianwang-banner {
-  margin: 12px 16px;
-  background: linear-gradient(135deg, #fff4e6 0%, #ffe8cc 100%);
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  .banner-icon {
-    color: #ff8c00;
-  }
-
-  .banner-text {
-    flex: 1;
-    font-size: 16px;
-    font-weight: 500;
-    color: #333;
-  }
-
-  .apply-btn {
-    background: white;
-    color: #ff8c00;
-    border: 1px solid #ff8c00;
-    padding: 6px 16px;
-    border-radius: 16px;
-    font-size: 13px;
   }
 }
 

@@ -205,7 +205,7 @@ const orderDetail = ref({
   orderNo: '400447028470919304040',
   orderTime: '2026-01-03 09:05:45',
   appointmentTime: '2026-01-03 12:00~2026-01-03 16:00',
-  orderTags: ['天网O2O', '天网O2O', '百一先到'],
+  orderTags: ['拼多多', '百一先到'],
   payType: '线上支付',
   deliveryIncome: '0.00',
   remark: '(缺货时电话与我联系)',

@@ -48,9 +48,10 @@
     <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
       <div class="order-list">
         <div
-          v-for="order in orderList"
+          v-for="(order, index) in orderList"
           :key="order.id"
           class="order-card"
+          @click="goOrderDetail(order.id)"
         >
           <!-- 右上角标签 -->
           <div class="corner-tag">天</div>
@@ -74,15 +75,15 @@
             <span class="customer-name">{{ order.customerName }}</span>
             <span class="divider">|</span>
             <span class="customer-phone">{{ order.phone }}</span>
-            <van-icon name="replay" color="#4E8EF7" @click="refreshOrder(order)" />
-            <van-icon name="phone-o" color="#4E8EF7" @click="callCustomer(order.phone)" />
+            <van-icon name="replay" color="#4E8EF7" @click.stop="refreshOrder(order)" />
+            <van-icon name="phone-o" color="#4E8EF7" @click.stop="callCustomer(order.phone)" />
           </div>
 
           <!-- 地址 -->
           <div class="address-row">
             <van-icon name="location-o" color="#4E8EF7" />
             <span class="address-text">{{ order.address }}</span>
-            <span class="copy-btn" @click="copyAddress(order.address)">复制</span>
+            <span class="copy-btn" @click.stop="copyAddress(order.address)">复制</span>
           </div>
 
           <!-- 商品信息 -->
@@ -132,11 +133,18 @@
 
           <!-- 操作按钮 -->
           <div class="action-row">
-            <van-button plain size="small" @click="showMore(order)">
-              更多 <van-icon name="arrow-down" />
-            </van-button>
-            <van-button size="small" @click="verifyOrder(order)">核销</van-button>
-            <van-button size="small" @click="refreshOrder(order)">刷新</van-button>
+            <div class="more-btn" @click.stop="toggleMore(index)">
+              更多 <van-icon :name="order.showMore ? 'arrow-down' : 'arrow-up'" size="12" />
+            </div>
+            <div class="action-buttons">
+              <van-button size="small" @click.stop="verifyOrder(order)">核销</van-button>
+              <van-button size="small" @click.stop="refreshOrder(order)">刷新</van-button>
+            </div>
+          </div>
+
+          <!-- 交易号 - 可展开收起 -->
+          <div class="transaction-row" v-show="order.showMore">
+            交易号：{{ order.transactionId }}
           </div>
         </div>
       </div>
@@ -180,7 +188,9 @@ const orderList = ref([
     totalPrice: '0',
     needCollect: '0.00',
     deliveryWorker: '宋再洋',
-    deliveryIncome: '0.00'
+    deliveryIncome: '0.00',
+    transactionId: '3046265978283616561',
+    showMore: false
   },
   {
     id: 2,
@@ -198,7 +208,9 @@ const orderList = ref([
     totalPrice: '0',
     needCollect: '0.00',
     deliveryWorker: '宋再洋',
-    deliveryIncome: '0.00'
+    deliveryIncome: '0.00',
+    transactionId: '3046265978283616562',
+    showMore: false
   }
 ])
 
@@ -255,8 +267,13 @@ const verifyOrder = (order) => {
   showToast('核销订单')
 }
 
-const showMore = (order) => {
-  showToast('更多操作')
+const toggleMore = (index) => {
+  orderList.value[index].showMore = !orderList.value[index].showMore
+}
+
+// 跳转到订单详情
+const goOrderDetail = (orderId) => {
+  router.push(`/order-detail/${orderId}`)
 }
 </script>
 
@@ -372,6 +389,12 @@ const showMore = (order) => {
   margin-bottom: 12px;
   position: relative;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:active {
+    transform: scale(0.98);
+  }
 
   .corner-tag {
     position: absolute;
@@ -581,25 +604,47 @@ const showMore = (order) => {
 
   .action-row {
     display: flex;
-    justify-content: flex-end;
-    gap: 8px;
+    justify-content: space-between;
+    align-items: center;
 
-    .van-button {
-      padding: 0 16px;
-      height: 32px;
+    .more-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
       font-size: 13px;
-    }
-
-    .van-button--plain {
-      border-color: #ddd;
       color: #666;
+      cursor: pointer;
     }
 
-    .van-button:not(.van-button--plain) {
-      background: white;
-      border: 1px solid #4E8EF7;
-      color: #4E8EF7;
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+
+      .van-button {
+        padding: 0 16px;
+        height: 32px;
+        font-size: 13px;
+      }
+
+      .van-button--plain {
+        border-color: #ddd;
+        color: #666;
+      }
+
+      .van-button:not(.van-button--plain) {
+        background: white;
+        border: 1px solid #4E8EF7;
+        color: #4E8EF7;
+      }
     }
+  }
+
+  .transaction-row {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+    font-size: 12px;
+    color: #999;
   }
 }
 </style>

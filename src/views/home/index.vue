@@ -132,11 +132,13 @@
             <div class="amount">¥{{ incomeStats.thisMonth }}</div>
           </div>
         </div>
-        <van-button type="primary" size="small" plain @click="refreshOrderStats">刷新</van-button>
+        <van-button type="primary" size="small" plain @click="refreshOrderStats"
+          >刷新</van-button
+        >
       </div>
     </div>
 
-    <!-- 快捷操作网格 (3列×4行) -->
+    <!-- 快捷操作网格 (3列) -->
     <div class="quick-actions">
       <div
         v-for="action in quickActions"
@@ -165,7 +167,9 @@
               </div>
               <div class="stat-item">
                 <div class="stat-label">未接数</div>
-                <div class="stat-value text-danger">{{ callStats.missedCalls }}</div>
+                <div class="stat-value text-danger">
+                  {{ callStats.missedCalls }}
+                </div>
               </div>
             </div>
             <div class="stats-detail">
@@ -298,43 +302,63 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { showToast, showSuccessToast } from 'vant'
-import Tabbar from '@/components/Tabbar.vue'
+import { ref, reactive } from "vue";
+import { useRouter } from "vue-router";
+import { showToast, showSuccessToast } from "vant";
+import Tabbar from "@/components/Tabbar.vue";
 
-const router = useRouter()
+const router = useRouter();
 
-const searchPhone = ref('')
-const activeBottomTab = ref('calls')
-const messageCount = ref(3)
-const showQuickOrderDialog = ref(false)
-const showProductPicker = ref(false)
+const searchPhone = ref("");
+const activeBottomTab = ref("calls");
+const messageCount = ref(3);
+const showQuickOrderDialog = ref(false);
+const showProductPicker = ref(false);
 
 // 快速下单表单
 const quickOrderForm = reactive({
-  phone: '',
-  address: '',
-  product: '',
-  quantity: '1',
-  remark: ''
-})
+  phone: "",
+  address: "",
+  product: "",
+  quantity: "1",
+  remark: "",
+});
 
 // 商品列表
 const productList = [
-  '怡宝 饮用纯净水 6L×3桶/箱',
-  '农夫山泉 饮用天然水 4L×6桶/箱',
-  '景田 百岁山饮用水 5L×4桶/箱',
-  '娃哈哈 纯净水 5L×4桶/箱'
-]
+  "怡宝 饮用纯净水 6L×3桶/箱",
+  "农夫山泉 饮用天然水 4L×6桶/箱",
+  "景田 百岁山饮用水 5L×4桶/箱",
+  "娃哈哈 纯净水 5L×4桶/箱",
+];
 
 // 4个主要功能
 const mainFunctions = [
-  { path: '/user-management', icon: 'friends-o', text: '我的用户', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-  { path: '/ticket-distribute', icon: 'coupon-o', text: '发放水票', color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-  { path: '/delivery-stats', icon: 'chart-trending-o', text: '配送统计', color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-  { path: '/inventory', icon: 'shopping-cart-o', text: '进销存', color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' }
-]
+  {
+    path: "/user-management",
+    icon: "friends-o",
+    text: "我的用户",
+    color: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  },
+  {
+    path: "/ticket-distribute",
+    icon: "coupon-o",
+    text: "发放水票",
+    color: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+  },
+  {
+    path: "/delivery-stats",
+    icon: "chart-trending-o",
+    text: "配送统计",
+    color: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+  },
+  {
+    path: "/inventory",
+    icon: "shopping-cart-o",
+    text: "进销存",
+    color: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+  },
+];
 
 // 工单统计数据
 const orderStats = ref({
@@ -345,18 +369,18 @@ const orderStats = ref({
   timeout: 1,
   almostTimeout: 3,
   toDispatch: 0,
-  delivering: 0
-})
+  delivering: 0,
+});
 
 // 收入统计
 const incomeStats = ref({
-  today: '0.00',
+  today: "0.00",
   todayOrders: 0,
-  yesterday: '0.00',
+  yesterday: "0.00",
   yesterdayOrders: 0,
-  thisMonth: '0.00',
-  monthOrders: 0
-})
+  thisMonth: "0.00",
+  monthOrders: 0,
+});
 
 // 今日来电统计
 const callStats = ref({
@@ -364,136 +388,180 @@ const callStats = ref({
   answeredCalls: 38,
   missedCalls: 7,
   orderCount: 25,
-  conversionRate: 65.8
-})
+  conversionRate: 65.8,
+});
 
 // 账户详情
 const accountInfo = ref({
-  balance: '2850.50',
-  deposit: '500.00',
+  balance: "2850.50",
+  deposit: "500.00",
   points: 1280,
-  emptyBarrels: 15
-})
+  emptyBarrels: 15,
+});
 
 // 线上收入
 const onlineIncome = ref({
-  wechat: '1850.00',
-  alipay: '680.00',
-  total: '2530.00',
-  orderCount: 18
-})
+  wechat: "1850.00",
+  alipay: "680.00",
+  total: "2530.00",
+  orderCount: 18,
+});
 
-// 12个快捷操作
+// 11个快捷操作
 const quickActions = [
-  { path: '/order-stats', icon: 'bar-chart-o', text: '接单库存', color: '#4E8EF7' },
-  { path: '/order-stats', icon: 'orders-o', text: '订单统计', color: '#4E8EF7' },
-  { path: '/worker-list', icon: 'manager-o', text: '我的工人', color: '#4E8EF7' },
-  { path: '/e-ticket', icon: 'coupon-o', text: '电子水票', color: '#4E8EF7' },
-  { path: '/qrcode', icon: 'qr', text: '二维码', color: '#4E8EF7' },
-  { path: '/store-settings', icon: 'setting-o', text: '门店设置', color: '#4E8EF7' },
-  { path: '/inventory-check', icon: 'records', text: '盘点统计', color: '#4E8EF7' },
-  { path: '/barrel-stats', icon: 'balance-o', text: '空桶统计', color: '#4E8EF7' },
-  { path: '/pending-sales', icon: 'pending-payment', text: '待核销', color: '#4E8EF7' },
-  { path: '/route-plan', icon: 'location-o', text: '顺路规划', color: '#4E8EF7' },
-  { path: '/my-delivery', icon: 'logistics', text: '我的配送', color: '#4E8EF7' },
-  { path: '/promotion-settings', icon: 'gift-o', text: '推广设置', color: '#4E8EF7' }
-]
+  {
+    path: "/order-stats",
+    icon: "bar-chart-o",
+    text: "接单库存",
+    color: "#4E8EF7",
+  },
+  {
+    path: "/order-stats",
+    icon: "orders-o",
+    text: "订单统计",
+    color: "#4E8EF7",
+  },
+  {
+    path: "/worker-management",
+    icon: "manager-o",
+    text: "我的工人",
+    color: "#4E8EF7",
+  },
+  { path: "/e-ticket", icon: "coupon-o", text: "电子水票", color: "#4E8EF7" },
+  { path: "/qrcode", icon: "qr", text: "二维码", color: "#4E8EF7" },
+  {
+    path: "/store-settings",
+    icon: "setting-o",
+    text: "门店设置",
+    color: "#4E8EF7",
+  },
+  {
+    path: "/inventory-check",
+    icon: "records",
+    text: "盘点统计",
+    color: "#4E8EF7",
+  },
+  {
+    path: "/barrel-stats",
+    icon: "balance-o",
+    text: "空桶统计",
+    color: "#4E8EF7",
+  },
+  {
+    path: "/verification-stats",
+    icon: "pending-payment",
+    text: "待核销",
+    color: "#4E8EF7",
+  },
+  {
+    path: "/route-plan",
+    icon: "location-o",
+    text: "线路规划",
+    color: "#4E8EF7",
+  },
+  {
+    path: "/my-delivery",
+    icon: "logistics",
+    text: "我的配送",
+    color: "#4E8EF7",
+  },
+];
 
 // 快速下单
 const handleQuickOrder = () => {
   if (!searchPhone.value) {
-    showToast('请输入电话号码')
-    return
+    showToast("请输入电话号码");
+    return;
   }
 
   // 验证手机号格式
-  const phoneReg = /^1[3-9]\d{9}$/
+  const phoneReg = /^1[3-9]\d{9}$/;
   if (!phoneReg.test(searchPhone.value)) {
-    showToast('请输入正确的手机号')
-    return
+    showToast("请输入正确的手机号");
+    return;
   }
 
   // 填充表单并打开弹窗
-  quickOrderForm.phone = searchPhone.value
-  quickOrderForm.address = ''
-  quickOrderForm.product = ''
-  quickOrderForm.quantity = '1'
-  quickOrderForm.remark = ''
-  showQuickOrderDialog.value = true
-}
+  quickOrderForm.phone = searchPhone.value;
+  quickOrderForm.address = "";
+  quickOrderForm.product = "";
+  quickOrderForm.quantity = "1";
+  quickOrderForm.remark = "";
+  showQuickOrderDialog.value = true;
+};
 
 // 商品选择确认
 const onProductConfirm = ({ selectedValues }) => {
-  quickOrderForm.product = selectedValues[0]
-  showProductPicker.value = false
-}
+  quickOrderForm.product = selectedValues[0];
+  showProductPicker.value = false;
+};
 
 // 提交快速下单
 const handleQuickOrderSubmit = () => {
   if (!quickOrderForm.address) {
-    showToast('请输入配送地址')
-    return false
+    showToast("请输入配送地址");
+    return false;
   }
   if (!quickOrderForm.product) {
-    showToast('请选择商品')
-    return false
+    showToast("请选择商品");
+    return false;
   }
   if (!quickOrderForm.quantity || quickOrderForm.quantity < 1) {
-    showToast('请输入正确的数量')
-    return false
+    showToast("请输入正确的数量");
+    return false;
   }
 
   // 模拟提交订单
-  showSuccessToast('下单成功')
-  showQuickOrderDialog.value = false
-  searchPhone.value = ''
+  showSuccessToast("下单成功");
+  showQuickOrderDialog.value = false;
+  searchPhone.value = "";
 
   // 可以跳转到订单列表查看
   setTimeout(() => {
-    router.push('/order-list')
-  }, 1500)
-}
+    router.push("/order-list");
+  }, 1500);
+};
 
 // 跳转消息中心
 const goMessage = () => {
-  router.push('/message')
-}
+  router.push("/message");
+};
 
 // 处理超时订单
 const handleTimeout = () => {
-  router.push('/order-timeout')
-}
+  router.push("/order-timeout");
+};
 
 // 处理快捷操作点击
 const handleAction = (action) => {
-  if (action.path.startsWith('/')) {
+  if (action.path.startsWith("/")) {
     router.push(action.path).catch(() => {
-      showToast('该功能正在开发中')
-    })
+      showToast("该功能正在开发中");
+    });
   }
-}
+};
 
 // 刷新订单统计
 const refreshOrderStats = () => {
-  showToast('正在刷新...')
+  showToast("正在刷新...");
   // 模拟刷新数据
   setTimeout(() => {
     // 这里可以调用API获取最新数据
-    showSuccessToast('刷新成功')
-  }, 800)
-}
+    showSuccessToast("刷新成功");
+  }, 800);
+};
 </script>
 
 <style lang="scss" scoped>
 .home-page {
-  background: #F5F5F5;
+  background: #f5f5f5;
   min-height: 100vh;
   padding-bottom: 50px;
 }
 
 // 顶部搜索栏 - 白色背景
 .home-header {
-  background: #FFFFFF;
+  background: #ffffff;
   padding: 12px 16px;
   display: flex;
   align-items: center;
@@ -504,7 +572,7 @@ const refreshOrderStats = () => {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: #F7F8FA;
+    background: #f7f8fa;
     border-radius: 24px;
     overflow: hidden;
     padding-right: 8px;
@@ -538,7 +606,7 @@ const refreshOrderStats = () => {
   justify-content: space-around;
   align-items: center;
   padding: 20px 16px;
-  background: #FFFFFF;
+  background: #ffffff;
 
   .function-item {
     display: flex;
@@ -567,7 +635,7 @@ const refreshOrderStats = () => {
 // 工单统计区域 - 浅蓝色卡片
 .order-section {
   margin: 8px 16px;
-  background: #E8F4F8;
+  background: #e8f4f8;
   border-radius: 12px;
   padding: 16px;
   position: relative;
@@ -615,7 +683,7 @@ const refreshOrderStats = () => {
 
           span {
             font-size: 13px;
-            color: #4E8EF7;
+            color: #4e8ef7;
           }
         }
       }
@@ -638,7 +706,7 @@ const refreshOrderStats = () => {
         margin-bottom: 4px;
 
         &.red {
-          color: #FF3B30;
+          color: #ff3b30;
         }
       }
 
@@ -654,7 +722,7 @@ const refreshOrderStats = () => {
     align-items: center;
     gap: 8px;
     padding: 12px;
-    background: #FFF4E6;
+    background: #fff4e6;
     border-radius: 8px;
 
     span {
@@ -664,7 +732,7 @@ const refreshOrderStats = () => {
 
     .count {
       font-weight: bold;
-      color: #FF8C00;
+      color: #ff8c00;
       margin-right: auto;
     }
   }
@@ -673,7 +741,7 @@ const refreshOrderStats = () => {
 // 订单状态与收入统计 - 合并的白色卡片
 .order-income-section {
   margin: 8px 16px;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -696,11 +764,11 @@ const refreshOrderStats = () => {
         margin-bottom: 8px;
 
         &.red {
-          color: #FF3B30;
+          color: #ff3b30;
         }
 
         &.blue {
-          color: #4E8EF7;
+          color: #4e8ef7;
         }
       }
 
@@ -713,7 +781,7 @@ const refreshOrderStats = () => {
 
   .divider {
     height: 1px;
-    background: #F0F0F0;
+    background: #f0f0f0;
     margin: 16px 0;
   }
 
@@ -761,7 +829,7 @@ const refreshOrderStats = () => {
 // 快捷操作网格 (3列×4行)
 .quick-actions {
   margin: 8px 16px;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12px;
   padding: 20px 16px;
   display: grid;
@@ -786,7 +854,7 @@ const refreshOrderStats = () => {
 // 底部统计Tab
 .bottom-stats {
   margin: 8px 16px 16px;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -802,12 +870,12 @@ const refreshOrderStats = () => {
     }
 
     :deep(.van-tab--active) {
-      color: #4E8EF7;
+      color: #4e8ef7;
       font-weight: 500;
     }
 
     :deep(.van-tabs__line) {
-      background: #4E8EF7;
+      background: #4e8ef7;
       width: 30px;
     }
 
@@ -835,7 +903,7 @@ const refreshOrderStats = () => {
             color: #333;
 
             &.text-danger {
-              color: #FF3B30;
+              color: #ff3b30;
             }
           }
         }
@@ -843,7 +911,7 @@ const refreshOrderStats = () => {
 
       .stats-detail {
         padding: 16px;
-        background: #F7F8FA;
+        background: #f7f8fa;
         border-radius: 8px;
 
         .detail-row {
@@ -868,7 +936,7 @@ const refreshOrderStats = () => {
           display: flex;
           justify-content: space-between;
           padding: 14px 0;
-          border-bottom: 1px solid #F5F5F5;
+          border-bottom: 1px solid #f5f5f5;
           font-size: 15px;
 
           &:last-child {
@@ -884,7 +952,7 @@ const refreshOrderStats = () => {
             font-weight: 500;
 
             &.primary {
-              color: #4E8EF7;
+              color: #4e8ef7;
               font-size: 18px;
               font-weight: bold;
             }
@@ -899,8 +967,8 @@ const refreshOrderStats = () => {
 
         .van-button {
           flex: 1;
-          border-color: #4E8EF7;
-          color: #4E8EF7;
+          border-color: #4e8ef7;
+          color: #4e8ef7;
         }
       }
 
@@ -917,7 +985,7 @@ const refreshOrderStats = () => {
           .income-item {
             flex: 1;
             padding: 16px;
-            background: #F7F8FA;
+            background: #f7f8fa;
             border-radius: 8px;
             text-align: center;
 
@@ -933,7 +1001,7 @@ const refreshOrderStats = () => {
               color: #333;
 
               &.primary {
-                color: #4E8EF7;
+                color: #4e8ef7;
                 font-size: 24px;
               }
             }
