@@ -341,9 +341,9 @@ const mainFunctions = [
     color: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
   },
   {
-    path: "/ticket-distribute",
-    icon: "coupon-o",
-    text: "发放水票",
+    path: "/worker-management",
+    icon: "manager-o",
+    text: "我的工人",
     color: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
   },
   {
@@ -407,14 +407,8 @@ const onlineIncome = ref({
   orderCount: 18,
 });
 
-// 11个快捷操作
+// 快捷操作
 const quickActions = [
-  {
-    path: "/order-stats",
-    icon: "bar-chart-o",
-    text: "接单库存",
-    color: "#4E8EF7",
-  },
   {
     path: "/order-stats",
     icon: "orders-o",
@@ -427,18 +421,10 @@ const quickActions = [
     text: "我的工人",
     color: "#4E8EF7",
   },
-  { path: "/e-ticket", icon: "coupon-o", text: "电子水票", color: "#4E8EF7" },
-  { path: "/qrcode", icon: "qr", text: "二维码", color: "#4E8EF7" },
   {
     path: "/store-settings",
     icon: "setting-o",
     text: "门店设置",
-    color: "#4E8EF7",
-  },
-  {
-    path: "/inventory-check",
-    icon: "records",
-    text: "盘点统计",
     color: "#4E8EF7",
   },
   {
@@ -454,7 +440,7 @@ const quickActions = [
     color: "#4E8EF7",
   },
   {
-    path: "/route-plan",
+    path: "/route-planning",
     icon: "location-o",
     text: "线路规划",
     color: "#4E8EF7",
@@ -463,6 +449,12 @@ const quickActions = [
     path: "/my-delivery",
     icon: "logistics",
     text: "我的配送",
+    color: "#4E8EF7",
+  },
+  {
+    path: "/order-manual",
+    icon: "edit",
+    text: "录入订单",
     color: "#4E8EF7",
   },
 ];

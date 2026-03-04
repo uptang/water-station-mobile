@@ -75,7 +75,7 @@
             <span class="customer-name">{{ order.customerName }}</span>
             <span class="divider">|</span>
             <span class="customer-phone">{{ order.phone }}</span>
-            <van-icon name="replay" color="#4E8EF7" @click.stop="refreshOrder(order)" />
+            <van-icon name="replay" color="#4E8EF7" @click.stop="handleRefresh(order)" />
             <van-icon name="phone-o" color="#4E8EF7" @click.stop="callCustomer(order.phone)" />
           </div>
 
@@ -137,8 +137,38 @@
               更多 <van-icon :name="order.showMore ? 'arrow-down' : 'arrow-up'" size="12" />
             </div>
             <div class="action-buttons">
-              <van-button size="small" @click.stop="verifyOrder(order)">核销</van-button>
-              <van-button size="small" @click.stop="refreshOrder(order)">刷新</van-button>
+              <!-- 根据订单状态显示不同按钮 -->
+              <van-button
+                v-if="order.status === 'pending'"
+                size="small"
+                type="primary"
+                @click.stop="handleDispatch(order)"
+              >
+                派单
+              </van-button>
+              <van-button
+                v-if="order.status === 'delivering'"
+                size="small"
+                type="primary"
+                @click.stop="handleDeliver(order)"
+              >
+                送达
+              </van-button>
+              <van-button
+                v-if="order.status === 'delivered'"
+                size="small"
+                type="success"
+                @click.stop="handleVerify(order)"
+              >
+                核销
+              </van-button>
+              <van-button
+                size="small"
+                plain
+                @click.stop="handleRefresh(order)"
+              >
+                刷新
+              </van-button>
             </div>
           </div>
 
@@ -150,6 +180,13 @@
       </div>
     </van-pull-refresh>
 
+    <!-- 派单弹窗 -->
+    <DispatchDialog
+      v-model:show="showDispatchDialog"
+      :worker-list="workerList"
+      @confirm="confirmDispatch"
+    />
+
     <tabbar />
   </div>
 </template>
@@ -159,8 +196,11 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
 import Tabbar from '@/components/Tabbar.vue'
+import DispatchDialog from '@/components/DispatchDialog.vue'
+import { useOrderActions } from '@/composables/useOrderActions'
 
 const router = useRouter()
+const { dispatchOrder, deliverOrder, verifyOrder: verifyOrderAction, refreshOrder: refreshOrderAction } = useOrderActions()
 
 const activeStatus = ref('delivered')
 const refreshing = ref(false)
@@ -169,11 +209,22 @@ const totalPage = ref(1)
 const showTimePicker = ref(false)
 const showChannelPicker = ref(false)
 const showKeywordPicker = ref(false)
+const showDispatchDialog = ref(false)
+const currentOrder = ref(null)
+
+// 配送员列表
+const workerList = ref([
+  { id: 1, name: '宋再洋', todayOrders: 8, distance: '1.2km' },
+  { id: 2, name: '张三', todayOrders: 5, distance: '2.5km' },
+  { id: 3, name: '李四', todayOrders: 10, distance: '0.8km' },
+  { id: 4, name: '王五', todayOrders: 6, distance: '3.1km' }
+])
 
 // 模拟订单数据
 const orderList = ref([
   {
     id: 1,
+    status: 'pending', // pending-待派单, delivering-配送中, delivered-已送达, verified-已核销
     deliveryTime: '2025-11-08 08:30',
     source: '扬州水达达电子商务有限公司总后台',
     storeName: '百一先到',
@@ -190,10 +241,12 @@ const orderList = ref([
     deliveryWorker: '宋再洋',
     deliveryIncome: '0.00',
     transactionId: '3046265978283616561',
-    showMore: false
+    showMore: false,
+    statusList: []
   },
   {
     id: 2,
+    status: 'delivering',
     deliveryTime: '2025-11-12 19:37',
     source: '扬州水达达电子商务有限公司总后台',
     storeName: '百一先到',
@@ -210,7 +263,8 @@ const orderList = ref([
     deliveryWorker: '宋再洋',
     deliveryIncome: '0.00',
     transactionId: '3046265978283616562',
-    showMore: false
+    showMore: false,
+    statusList: []
   }
 ])
 
@@ -249,8 +303,37 @@ const showSearch = () => {
   showToast('搜索功能')
 }
 
-const refreshOrder = (order) => {
-  showToast('刷新订单')
+// 派单操作
+const handleDispatch = (order) => {
+  currentOrder.value = order
+  showDispatchDialog.value = true
+}
+
+// 确认派单
+const confirmDispatch = (worker) => {
+  if (!currentOrder.value) return
+
+  dispatchOrder(currentOrder.value, worker, () => {
+    showDispatchDialog.value = false
+    currentOrder.value = null
+  })
+}
+
+// 送达操作
+const handleDeliver = (order) => {
+  deliverOrder(order)
+}
+
+// 核销操作
+const handleVerify = (order) => {
+  verifyOrderAction(order, () => {
+    // 核销成功后可以从列表中移除或刷新列表
+  })
+}
+
+// 刷新订单
+const handleRefresh = (order) => {
+  refreshOrderAction(order)
 }
 
 const callCustomer = (phone) => {
@@ -261,10 +344,6 @@ const copyAddress = (address) => {
   navigator.clipboard.writeText(address).then(() => {
     showToast('地址已复制')
   })
-}
-
-const verifyOrder = (order) => {
-  showToast('核销订单')
 }
 
 const toggleMore = (index) => {

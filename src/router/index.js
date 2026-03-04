@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
@@ -310,11 +310,17 @@ const routes = [
     name: 'OrderSyncLog',
     component: () => import('@/views/order-sync-log/index.vue'),
     meta: { title: '同步日志', requiresAuth: true }
+  },
+  {
+    path: '/store-settings',
+    name: 'StoreSettings',
+    component: () => import('@/views/store-settings/index.vue'),
+    meta: { title: '门店设置', requiresAuth: true }
   }
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes
 })
 

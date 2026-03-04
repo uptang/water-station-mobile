@@ -27,11 +27,11 @@
         </div>
         <span>我的用户</span>
       </div>
-      <div class="function-item" @click="router.push('/ticket-distribute')">
+      <div class="function-item" @click="router.push('/worker-management')">
         <div class="icon-circle pink">
-          <van-icon name="coupon-o" size="24" color="#fff" />
+          <van-icon name="manager-o" size="24" color="#fff" />
         </div>
-        <span>发放水票</span>
+        <span>我的工人</span>
       </div>
       <div class="function-item" @click="router.push('/delivery-stats')">
         <div class="icon-circle green">
@@ -68,7 +68,6 @@
     <!-- 版权信息 -->
     <div class="copyright">
       <p>APP备案编号：渝ICP备20210319号-4A</p>
-      <p>官网链接：https://beian.miit.gov.cn</p>
     </div>
 
     <tabbar />
@@ -86,36 +85,16 @@ const messageCount = ref(0);
 
 // 功能网格项目（5列布局）
 const functionItems = [
-  { icon: "records", text: "接单库存", path: "/order-stats" },
-  // { icon: "gold-coin-o", text: "现金账户", path: null },
-  // { icon: "balance-list-o", text: "账户流水", path: null },
   { icon: "manager-o", text: "我的工人", path: "/worker-management" },
-  { icon: "coupon-o", text: "电子水票", path: null },
-
-  { icon: "qr", text: "二维码", path: null },
-  { icon: "setting-o", text: "门店设置", path: null },
+  { icon: "setting-o", text: "门店设置", path: "/store-settings" },
   { icon: "bar-chart-o", text: "订单统计", path: "/order-stats" },
   { icon: "balance-o", text: "空桶统计", path: "/barrel-stats" },
   { icon: "pending-payment", text: "待核销", path: "/verification-stats" },
+
   { icon: "chart-trending-o", text: "配送统计", path: "/delivery-stats" },
-  // { icon: "credit-pay", text: "实体卡", path: null },
-  // { icon: "gold-coin-o", text: "软件续费", path: null },
-  // { icon: "shop-o", text: "订货商城", path: null },
-  { icon: "balance-list-o", text: "盘点统计", path: null },
-
-  { icon: "qr", text: "订水二维码", path: null },
-  { icon: "records", text: "商品盘点", path: null },
-  { icon: "records", text: "空桶盘点", path: null },
-
   { icon: "edit", text: "录入订单", path: "/order-manual" },
   { icon: "logistics", text: "我的配送", path: "/my-delivery" },
   { icon: "location-o", text: "线路规划", path: "/route-planning" },
-  { icon: "coupon-o", text: "优惠券管理", path: null },
-  { icon: "clock-o", text: "周期订水", path: null },
-
-  // { icon: "balance-list-o", text: "财务中心", path: "/financial" },
-  // { icon: "service-o", text: "代运营服务", path: null },
-  // { icon: "user-circle-o", text: "会员管理", path: null },
   { icon: "setting-o", text: "平台配置", path: "/platform-config" },
 ];
 

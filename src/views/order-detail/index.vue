@@ -177,17 +177,116 @@
         </div>
       </div>
     </div>
+
+    <!-- 底部操作按钮 -->
+    <div class="action-footer">
+      <van-button
+        v-if="orderDetail.status === 'pending'"
+        type="primary"
+        block
+        @click="showDispatchDialog = true"
+      >
+        派单
+      </van-button>
+      <van-button
+        v-if="orderDetail.status === 'delivering'"
+        type="primary"
+        block
+        @click="handleDeliver"
+      >
+        送达
+      </van-button>
+      <van-button
+        v-if="orderDetail.status === 'delivered'"
+        type="success"
+        block
+        @click="handleVerify"
+      >
+        核销订单
+      </van-button>
+      <van-button
+        v-if="['pending', 'delivering'].includes(orderDetail.status)"
+        plain
+        block
+        @click="handleCancel"
+      >
+        取消订单
+      </van-button>
+    </div>
+
+    <!-- 派单弹窗 -->
+    <van-popup v-model:show="showDispatchDialog" position="bottom" round>
+      <div class="dispatch-popup">
+        <div class="popup-header">
+          <span class="title">选择配送员</span>
+          <van-icon name="cross" @click="showDispatchDialog = false" />
+        </div>
+        <van-search v-model="workerSearch" placeholder="搜索配送员" />
+        <div class="worker-list">
+          <div
+            v-for="worker in filteredWorkers"
+            :key="worker.id"
+            class="worker-item"
+            :class="{ selected: selectedWorker?.id === worker.id }"
+            @click="selectedWorker = worker"
+          >
+            <div class="worker-info">
+              <div class="worker-name">{{ worker.name }}</div>
+              <div class="worker-stats">
+                <span>今日订单：{{ worker.todayOrders }}</span>
+                <span>距离：{{ worker.distance }}</span>
+              </div>
+            </div>
+            <van-icon
+              v-if="selectedWorker?.id === worker.id"
+              name="success"
+              color="#4E8EF7"
+              size="20"
+            />
+          </div>
+        </div>
+        <div class="popup-footer">
+          <van-button block type="primary" @click="confirmDispatch">
+            确认派单
+          </van-button>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { showToast, showSuccessToast, showConfirmDialog } from 'vant'
 
 const router = useRouter()
 const route = useRoute()
 
+const showDispatchDialog = ref(false)
+const workerSearch = ref('')
+const selectedWorker = ref(null)
+
+// 配送员列表
+const workerList = ref([
+  { id: 1, name: '宋再洋', todayOrders: 8, distance: '1.2km' },
+  { id: 2, name: '张三', todayOrders: 5, distance: '2.5km' },
+  { id: 3, name: '李四', todayOrders: 10, distance: '0.8km' },
+  { id: 4, name: '王五', todayOrders: 6, distance: '3.1km' }
+])
+
+// 过滤后的配送员列表
+const filteredWorkers = computed(() => {
+  if (!workerSearch.value) {
+    return workerList.value
+  }
+  return workerList.value.filter(worker =>
+    worker.name.includes(workerSearch.value)
+  )
+})
+
 const orderDetail = ref({
+  status: 'pending', // 订单状态: pending-待派单, delivering-配送中, delivered-已送达, verified-已核销
   productName: '怡宝 饮用纯净水6L×3桶/箱',
   qty: 2,
   totalPrice: 0,
@@ -252,6 +351,154 @@ const orderDetail = ref({
     }
   ]
 })
+
+// 确认派单
+const confirmDispatch = () => {
+  if (!selectedWorker.value) {
+    showToast('请选择配送员')
+    return
+  }
+
+  showConfirmDialog({
+    title: '确认派单',
+    message: `确定将订单派给 ${selectedWorker.value.name} 吗？`
+  })
+    .then(() => {
+      // 更新订单状态
+      orderDetail.value.status = 'delivering'
+
+      // 添加派单记录到时间线
+      orderDetail.value.statusList.unshift({
+        name: '派单',
+        time: new Date().toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        }).replace(/\//g, '-'),
+        operator: '当前用户',
+        worker: selectedWorker.value.name
+      })
+
+      showSuccessToast('派单成功')
+      showDispatchDialog.value = false
+      selectedWorker.value = null
+    })
+    .catch(() => {
+      // 取消操作
+    })
+}
+
+// 送达
+const handleDeliver = () => {
+  showConfirmDialog({
+    title: '确认送达',
+    message: '确认订单已送达？'
+  })
+    .then(() => {
+      orderDetail.value.status = 'delivered'
+
+      // 添加送达记录
+      orderDetail.value.statusList.unshift({
+        name: '送达',
+        time: new Date().toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        }).replace(/\//g, '-'),
+        operator: '当前配送员',
+        deliveryAddress: orderDetail.value.address,
+        money: '0.00',
+        debt: '0.00'
+      })
+
+      showSuccessToast('订单已送达')
+    })
+    .catch(() => {
+      // 取消操作
+    })
+}
+
+// 核销订单
+const handleVerify = () => {
+  showConfirmDialog({
+    title: '确认核销',
+    message: '确认核销该订单？核销后订单状态将变为已完成'
+  })
+    .then(() => {
+      orderDetail.value.status = 'verified'
+
+      // 添加核销记录
+      orderDetail.value.statusList.unshift({
+        name: '核销',
+        time: new Date().toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        }).replace(/\//g, '-'),
+        operator: '当前用户'
+      })
+
+      showSuccessToast('核销成功')
+
+      // 核销后自动返回上一页
+      setTimeout(() => {
+        router.back()
+      }, 1500)
+    })
+    .catch(() => {
+      // 取消操作
+    })
+}
+
+// 取消订单
+const handleCancel = () => {
+  showConfirmDialog({
+    title: '取消订单',
+    message: '确定要取消该订单吗？取消后无法恢复',
+    confirmButtonText: '确认取消',
+    confirmButtonColor: '#FF3B30'
+  })
+    .then(() => {
+      orderDetail.value.status = 'cancelled'
+
+      // 添加取消记录
+      orderDetail.value.statusList.unshift({
+        name: '取消订单',
+        time: new Date().toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        }).replace(/\//g, '-'),
+        operator: '当前用户'
+      })
+
+      showSuccessToast('订单已取消')
+
+      setTimeout(() => {
+        router.back()
+      }, 1500)
+    })
+    .catch(() => {
+      // 取消操作
+    })
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -510,6 +757,110 @@ const orderDetail = ref({
         }
       }
     }
+  }
+}
+
+// 底部操作按钮区域
+.action-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  background: white;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+
+  .van-button {
+    margin-bottom: 8px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// 为页面内容添加底部padding，避免被固定按钮遮挡
+.container {
+  padding-bottom: 100px;
+}
+
+// 派单弹窗样式
+.dispatch-popup {
+  padding: 0;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+
+  .popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #f5f5f5;
+
+    .title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .van-icon {
+      font-size: 20px;
+      color: #999;
+      cursor: pointer;
+    }
+  }
+
+  .van-search {
+    background: white;
+  }
+
+  .worker-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 16px;
+
+    .worker-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      margin-bottom: 8px;
+      background: #f7f8fa;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &.selected {
+        background: #e8f4f8;
+        border: 1px solid #4e8ef7;
+      }
+
+      .worker-info {
+        flex: 1;
+
+        .worker-name {
+          font-size: 15px;
+          font-weight: 500;
+          color: #333;
+          margin-bottom: 6px;
+        }
+
+        .worker-stats {
+          display: flex;
+          gap: 16px;
+          font-size: 13px;
+          color: #666;
+        }
+      }
+    }
+  }
+
+  .popup-footer {
+    padding: 12px 16px;
+    border-top: 1px solid #f5f5f5;
+    background: white;
   }
 }
 </style>
